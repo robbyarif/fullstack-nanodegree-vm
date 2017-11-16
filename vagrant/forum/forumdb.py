@@ -14,6 +14,7 @@ def get_posts():
     cur = conn.cursor()
     cur.execute("""SELECT content, time FROM posts ORDER BY time DESC""")
     rows = cur.fetchall()
+    conn.close()
     return rows
 
 def add_post(content):
@@ -22,4 +23,4 @@ def add_post(content):
     cur = conn.cursor()
     cur.execute("""INSERT INTO posts VALUES ('%s', DEFAULT) """ % (content))
     conn.commit()
-    # POSTS.append((content, datetime.datetime.now()))
+    conn.close()
