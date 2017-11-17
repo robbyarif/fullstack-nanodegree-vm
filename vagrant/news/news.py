@@ -1,13 +1,16 @@
+#!usr/bin/python
+
 
 """
-Database API codes for DB News.
+A reporting tool that prints out reports (in plain text) based on the data
+in the database.
 """
 
 import psycopg2
 
-def get_most_popular_articles(number):
-    """Return title and number views of the most popular articles from news log ordered from the
-     highest views."""
+
+def get_most_popular_articles():
+    """Return three most popular articles from news log."""
     conn = psycopg2.connect("dbname=news")
     cur = conn.cursor()
     query = """SELECT title, COUNT(log.path) as views
@@ -15,54 +18,76 @@ def get_most_popular_articles(number):
         LEFT JOIN log ON path LIKE '%'||slug
         GROUP BY title
         ORDER BY views DESC
-        LIMIT {}""".format(number)
-    print(query)
+        LIMIT 3"""
+    # print(query)
     cur.execute(query)
     rows = cur.fetchall()
     conn.close()
-    print(rows)
+    # print(rows)
     return rows
 
-def get_most_popular_authors(number):
-    """Return author name and number of views of the most popular authors from news log ordered from
-     highest views."""
+
+def get_most_popular_authors():
+    """Return author name and number of views of the most popular authors from
+    news log ordered from highest views."""
     conn = psycopg2.connect("dbname=news")
     cur = conn.cursor()
-    query = """SELECT name, COUNT(log.path) as views
+    query = """
+    SELECT name, COUNT(log.path) as views
         FROM authors
         LEFT JOIN articles ON author = authors.id
         LEFT JOIN log ON path LIKE '%'||slug
         GROUP BY name
-        ORDER BY views DESC
-        LIMIT {}""".format(number)
-    print(query)
+        ORDER BY views DESC"""
+    # print(query)
     cur.execute(query)
     rows = cur.fetchall()
     conn.close()
-    print(rows)
+    # print(rows)
     return rows
 
-def get_days_with_error_rate(error_rate):
-    """Return the date and the error rate of the day with the most error ordered from the highest
-    error rate."""
+
+def get_days_with_error_rate():
+    """Return the date and the error rate of the day with the most error
+    ordered from the highest error rate."""
     conn = psycopg2.connect("dbname=news")
     cur = conn.cursor()
     query = """
     SELECT to_char(day,'DD Mon YYYY') as day, errorrate from (
-        SELECT  date_trunc('day',time) as day, 
-                ROUND( 100 * SUM(CASE WHEN status = '404 NOT FOUND' THEN 1 ELSE 0 END)::numeric/COUNT(*),2) as errorrate
+        SELECT  date_trunc('day',time) as day,
+                ROUND( 100 *
+                    SUM(CASE WHEN status = '404 NOT FOUND'
+                    THEN 1 ELSE 0 END)::numeric
+                    / COUNT(*), 2) as errorrate
         FROM log GROUP BY day ORDER BY day
     ) as statistics
-    WHERE errorrate > {}
-    """.format(error_rate)
-    print(query)
+    WHERE errorrate > 1"""
+    # print(query)
     cur.execute(query)
     rows = cur.fetchall()
     conn.close()
-    print(rows)
+    # print(rows)
     return rows
 
+
+# def test(number):
+#     print(number)
+
+
 if __name__ == '__main__':
-    get_most_popular_articles(2)
-    get_most_popular_authors(4)
-    get_days_with_error_rate(1)
+    # test()
+
+    print("Three Most Popular Articles of All Time")
+    articles = get_most_popular_articles()
+    for article in articles:
+        print("- ""{}"" - {} views".format(article[0], article[1]))
+
+    print("Most Popular Article Authors of All Time")
+    authors = get_most_popular_authors()
+    for author in authors:
+        print("- {} - {} views".format(author[0], author[1]))
+
+    print("Days with Error Rate More Than 1%")
+    days = get_days_with_error_rate()
+    for day in days:
+        print("- {} - {}% errors".format(day[0], day[1]))

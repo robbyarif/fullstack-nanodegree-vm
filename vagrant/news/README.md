@@ -14,14 +14,16 @@ Sample data can be downloaded [here](https://d17h27t6h515a5.cloudfront.net/tophe
 ```
 
 ## How to Use
-- Open terminal
-- Run
+Open terminal
+
+Run
 ```
 python news.py
 ```
-- A report will be printed in console. For example
+
+A report will be printed in console. For example
 ```
-$ Most Popular Three Articles of All Time
+$ Three Most Popular Articles of All Time
 $ - "Princess Shellfish Marries Prince Handsome" — 1201 views
 $ - "Baltimore Ravens Defeat Rhode Island Shoggoths" — 915 views
 $
