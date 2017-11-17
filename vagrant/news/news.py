@@ -19,11 +19,9 @@ def get_most_popular_articles():
         GROUP BY title
         ORDER BY views DESC
         LIMIT 3"""
-    # print(query)
     cur.execute(query)
     rows = cur.fetchall()
     conn.close()
-    # print(rows)
     return rows
 
 
@@ -39,11 +37,9 @@ def get_most_popular_authors():
         LEFT JOIN log ON path LIKE '%'||slug
         GROUP BY name
         ORDER BY views DESC"""
-    # print(query)
     cur.execute(query)
     rows = cur.fetchall()
     conn.close()
-    # print(rows)
     return rows
 
 
@@ -62,32 +58,24 @@ def get_days_with_error_rate():
         FROM log GROUP BY day ORDER BY day
     ) as statistics
     WHERE errorrate > 1"""
-    # print(query)
     cur.execute(query)
     rows = cur.fetchall()
     conn.close()
-    # print(rows)
     return rows
 
-
-# def test(number):
-#     print(number)
-
-
 if __name__ == '__main__':
-    # test()
 
     print("Three Most Popular Articles of All Time")
     articles = get_most_popular_articles()
     for article in articles:
         print("- ""{}"" - {} views".format(article[0], article[1]))
 
-    print("Most Popular Article Authors of All Time")
+    print("\nMost Popular Article Authors of All Time")
     authors = get_most_popular_authors()
     for author in authors:
         print("- {} - {} views".format(author[0], author[1]))
 
-    print("Days with Error Rate More Than 1%")
+    print("\nDays with Error Rate More Than 1%")
     days = get_days_with_error_rate()
     for day in days:
         print("- {} - {}% errors".format(day[0], day[1]))
