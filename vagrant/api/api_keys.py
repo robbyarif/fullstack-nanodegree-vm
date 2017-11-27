@@ -1,0 +1,6 @@
+# Google Maps API Key
+gmaps_key = "AIzaSyAsEJhvPvj8wA7Fwu5LxEWlBe_AKQVDYH4"
+
+# Foursquare API Key
+foursquare_client_id = "HWKDG5RB52IXXHBNS2U4UAVGKUDPB0ZI1AY5GTAW1Z33KZ2K"
+foursquare_client_secret = "CJIWVDHDILASJ2G5DSDTL31S1IQZ2RZIPARI3C4NU5BGZAYT"
