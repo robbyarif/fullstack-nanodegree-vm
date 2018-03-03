@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Catalog App</title>
+	</head>
+	<body>
+		<div>
+			<h1 style="display:inline-block">Catalog App</h1>
+			<a href="#">Logout</a> 
+		</div>
+		<div>
+			<div style="display:inline-block;">
+				<a href='#'>Add Category</a>
+				<h2>Categories</h2>
+				{% for i in categories %}
+				<p>
+					<a href='#'>{{i.name}}</a>     <small><a href="#">Edit</a> | <a href="#">Delete</a></small>
+				</p>
+				{% endfor %}
+			</div>
+			<div style="display:inline-block;">
+				<a href='#'>Add Item</a>
+				<h2>Latest Items</h2>
+				{% for i in items %}
+				<p>
+					<a href='#'><span>{{i.name}}</span><span> ({{i.category_name}})</span></a>
+				</p>
+				{% endfor %}
+			</div>
+		</div>
+	</body>
+</html>

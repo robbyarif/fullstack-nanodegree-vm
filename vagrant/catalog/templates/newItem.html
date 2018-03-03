@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+	</head>
+	<body>
+		<div>
+			<h1 style="display:inline-block">Catalog App</h1>
+			<a href="#">Logout</a> 
+		</div>
+		<h2>Add Item</h2>
+		<form action="#" method = "post">
+			<p for="name">Name:</p>
+			<input type ="text" name="name">
+			<p>Description:</p>
+			<input type ="text" name="description">
+			<p>Category:</p>
+			<select name="category_name">
+				{% for c in categories %}
+				<option value="{{c.id}}">{{c.name}}</option>
+				{% endfor %}
+			</select>
+			<br>
+			<input type="submit" value="Create">
+		</form>
+		<a href="#">Cancel</a>
+	</body>
+</html>
