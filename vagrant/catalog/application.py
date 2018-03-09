@@ -1,117 +1,107 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database_setup import Base, Category, Item
+from datetime import datetime
 app = Flask(__name__)
 
-# Dummy Catalogs
-category = {'id':'5', 'name':'Snowboarding', 'number_of_items':2}
-categories = [
-    {'id':'1', 'name':'Soccer'}, 
-    {'id':'2', 'name':'Basketball'}, 
-    {'id':'3', 'name':'Baseball'}, 
-    {'id':'4', 'name':'Frisbee'}, 
-    {'id':'5', 'name':'Snowboarding'}, 
-    {'id':'6', 'name':'Rock climbing'}, 
-    {'id':'7', 'name':'Foosball'}, 
-    {'id':'8', 'name':'Skating'}, 
-    {'id':'9', 'name':'Hockey'}
-]
+engine = create_engine('sqlite:///itemcatalog.db')
+Base.metadata.bind = engine
 
-# Dummy Items
-item = {'id':'1', 'name':'Snowboard', 'category_name':'Snowboarding', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'}
-categoryItems = [
-    {'id':'2', 'name':'Goggles', 'category_name':'Snowboarding', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'},
-    {'id':'3', 'name':'Snowboard', 'category_name':'Snowboarding', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'}
-]
-items = [
-    {'id':'1', 'name':'Stick', 'category_name':'Hockey', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'},
-    {'id':'2', 'name':'Goggles', 'category_name':'Snowboarding', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'},
-    {'id':'3', 'name':'Snowboard', 'category_name':'Snowboarding', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'},
-    {'id':'4', 'name':'Two shinguards', 'category_name':'Soccer', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'},
-    {'id':'5', 'name':'Shinguards', 'category_name':'Soccer', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'},
-    {'id':'6', 'name':'Frisbee', 'category_name':'Frisbee', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'},
-    {'id':'7', 'name':'Bat', 'category_name':'Baseball', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'},
-    {'id':'8', 'name':'Jersey', 'category_name':'Soccer', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'},
-    {'id':'9', 'name':'Soccer cleats', 'category_name':'Soccer', 'description':'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'}
-]
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
 # Authentication
-@app.route('/login/')
-def showLogin():
-    return "This page will show a Google login button here"
+# @app.route('/login/')
+# def showLogin():
+#     return "This page will show a Google login button here"
 
-@app.route('/gconnect/')
-def gconnect():
-    return "This is a helper page for connecting with Google API OAuth"
+# @app.route('/gconnect/')
+# def gconnect():
+#     return "This is a helper page for connecting with Google API OAuth"
 
-@app.route('/gdisconnect/')
-def gdisconnect():
-    return "This is for disconnecting a logged in user"
+# @app.route('/gdisconnect/')
+# def gdisconnect():
+#     return "This is for disconnecting a logged in user"
 
-# JSON APIs
-@app.route('/catalogs/JSON/')
-@app.route('/catalogs/json/')
-def catalogJSON():
-    return "This page will show all catalogs and its items in JSON format"
+# # JSON APIs
+# @app.route('/catalog/JSON/')
+# @app.route('/catalog/json/')
+# def catalogJSON():
+#     return "This page will show all catalog and its items in JSON format"
 
-@app.route('/catalogs/<category_id>/items/<item_id>/JSON/')
-@app.route('/catalogs/<category_id>/items/<item_id>/json/')
-def itemJSON(category_id, item_id):
-    return "This page will show an item {0} from catalog {1} in JSON format".format(item_id, category_id)
+# @app.route('/catalog/<int:category_id>/items/<item_id>/JSON/')
+# @app.route('/catalog/<int:category_id>/items/<item_id>/json/')
+# def itemJSON(category_id, item_id):
+#     return "This page will show an item {0} from catalog {1} in JSON format".format(item_id, category_id)
 
-@app.route('/catalogs/<category_id>/JSON/')
-@app.route('/catalogs/<category_id>/json/')
-@app.route('/catalogs/<category_id>/items/JSON/')
-@app.route('/catalogs/<category_id>/items/json/')
-def catalogItemJSON(category_id):
-    return "This page will show items from catalog %s in JSON format" % category_id
+# @app.route('/catalog/<int:category_id>/JSON/')
+# @app.route('/catalog/<int:category_id>/json/')
+# @app.route('/catalog/<int:category_id>/items/JSON/')
+# @app.route('/catalog/<int:category_id>/items/json/')
+# def catalogItemJSON(category_id):
+#     return "This page will show items from catalog %s in JSON format" % category_id
 
-# Show all catalogs
+# Show all catalog
 @app.route('/')
-@app.route('/catalogs/')
-def showCatalogs():
+@app.route('/catalog/')
+def showCatalog():
+    categories = session.query(Category)
+    items = session.query(Item).order_by(Item.created_datetime.desc()).all()
+    #if authorized
     return render_template('catalog.html', categories = categories, items = items)
+    #else not authorized
     # return render_template('publicCatalog.html', categories = categories, items = items)
 
-# Create new catalog
-@app.route('/catalogs/new/')
-def newCatalog():
-    return render_template('newCategory.html')
-
-# Edit a catalog
-@app.route('/catalogs/<category_id>/edit/')
-def editCatalog(category_id):
-    return render_template('editCategory.html', category = category)
-
-# Delete a catalog
-@app.route('/catalogs/<category_id>/delete/')
-def deleteCatalog(category_id):
-    return render_template('deleteCategory.html', category = category)
-
 # Show catalog items
-@app.route('/catalogs/<category_id>/')
-@app.route('/catalogs/<category_id>/items/')
-def showCatalogItems(category_id):
+@app.route('/catalog/<category>/items/')
+def showCatalogItems(category):
+    categories = session.query(Category)
+    category = session.query(Category).filter_by(name = category).one()
+    #if category not found return 404
+    categoryItems = session.query(Item).filter_by(category_id = category.id).all()
+    #if empty show flash message no items yet. do you want to add some?
+    #if authorized
     return render_template('catalogItems.html', categories = categories, category = category, items= categoryItems)
+    #else not authorized
     # return render_template('publicCatalogItems.html', categories = categories, category= category, items= categoryItems)
 
 # Create a new item
-@app.route('/catalogs/<category_id>/items/new/')
-def newItem(category_id):
-    return render_template('newItem.html', categories = categories)
+@app.route('/catalog/items/new/', methods=['GET', 'POST'])
+def newItem():
+    categories = session.query(Category)
+    if request.method == 'POST':
+        newItem = Item(name = request.form['name'], description = request.form['description'],
+                       category = request.form['category_id'], created_datetime = datetime.now())
+        session.add(newItem)
+        session.commit()
+        #flash message
+        return redirect(url_for('showCatalog'))
+    else:
+        return render_template('newItem.html', categories = categories)
 
 # Show an item
-@app.route('/catalogs/<category_id>/items/<item_id>/')
-def showItem(category_id, item_id):
+@app.route('/catalog/<category>/<item>/')
+def showItem(category, item):
+    item = session.query(Item).join(Category)\
+    .filter(Category.name == category)\
+    .filter(Item.name == item).one()
+    #if not found return 404
+    #if authorized
     return render_template('itemDetails.html', item = item)
+    #else not authorized
     # return render_template('publicItemDetails.html', item = item)
 
 # Edit an item
-@app.route('/catalogs/<category_id>/items/<item_id>/edit/')
-def editItem(category_id, item_id):
-    return render_template('editItem.html', categories = categories, item = item)
+@app.route('/catalog/<item>/edit/', methods=['GET', 'POST'])
+def editItem(item):
+    item = session.query(Item).filter_by(name = item).one()
+    return render_template('editItem.html', item = item)
 
 # Delete an item
-@app.route('/catalogs/<category_id>/items/<item_id>/delete/')
-def deleteItem(category_id, item_id):
+@app.route('/catalog/<item>/delete/', methods=['GET', 'POST'])
+def deleteItem(item):
+    item = session.query(Item).filter_by(name = item).one()
     return render_template('deleteItem.html', item = item)
 
 if __name__ == '__main__':

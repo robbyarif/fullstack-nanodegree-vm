@@ -6,15 +6,15 @@
 	</head>
 	<body>
 		<div>
-			<h1 style="display:inline-block">Catalog App</h1>
+			<h1 style="display:inline-block"><a href="{{url_for('showCatalog')}}">Catalog App</a></h1>
 			<a href="#">Login</a> 
 		</div>
 		<div>
 			<div style="display:inline-block;">
 				<h2>Categories</h2>
-				{% for i in categories %}
+				{% for c in categories %}
 				<div>
-					<a href='#'><p>{{i.name}}</p></a>
+					<a href="{{url_for('showCatalogItems', category=c.name)}}"><p>{{c.name}}</p></a>
 				</div>
 				{% endfor %}
 			</div>
@@ -22,7 +22,7 @@
 				<h2>Latest Items</h2>
 				{% for i in items %}
 				<p>
-					<a href='#'><span>{{i.name}}</span><span> ({{i.category_name}})</span></a>
+					<a href="{{url_for('showItem', category = i.category.name, item = i.name)}}"><span>{{i.name}}</span><span> ({{i.category.name}})</span></a>
 				</p>
 				{% endfor %}
 			</div>

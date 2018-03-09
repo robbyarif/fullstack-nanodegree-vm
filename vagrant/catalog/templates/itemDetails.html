@@ -6,13 +6,13 @@
 	</head>
 	<body>
 		<div>
-			<h1 style="display:inline-block">Catalog App</h1>
+			<h1 style="display:inline-block"><a href="{{url_for('showCatalog')}}">Catalog App</a></h1>
 			<a href="#">Login</a> 
 		</div>
 		<div>
 			<h2>{{item.name}}</h2>
 			<p>{{item.description}}</p>
-			<a href="#">Edit</a> | <a href="#">Delete</a>
+			<a href="{{url_for()}}">Edit</a> | <a href="#">Delete</a>
 		</div>
 	</body>
 </html>

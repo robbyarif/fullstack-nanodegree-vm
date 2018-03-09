@@ -5,7 +5,7 @@
 	</head>
 	<body>
 		<div>
-			<h1 style="display:inline-block">Catalog App</h1>
+			<h1 style="display:inline-block"><a href="{{url_for('showCatalog')}}">Catalog App</a></h1>
 			<a href="#">Logout</a> 
 		</div>
 		<h2>Add Item</h2>
@@ -15,7 +15,7 @@
 			<p>Description:</p>
 			<input type ="text" name="description">
 			<p>Category:</p>
-			<select name="category_name">
+			<select name="category_id">
 				{% for c in categories %}
 				<option value="{{c.id}}">{{c.name}}</option>
 				{% endfor %}
