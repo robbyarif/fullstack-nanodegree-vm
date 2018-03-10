@@ -5,14 +5,26 @@
 	</head>
 	<body>
 		<div>
-			<h1 style="display:inline-block">Catalog App</h1>
+			<h1 style="display:inline-block"><a href="{{url_for('showCatalog')}}">Catalog App</a></h1>
 			<a href="#">Logout</a> 
 		</div>
 		<h2>Delete Item</h2>
+
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+		
+		<ul>
+		{% for message in messages %}
+			<li><strong>{{message}}</strong></li>
+		{% endfor %}
+		</ul>
+		{% endif %}
+		{% endwith %}
+
 		<p>Are you sure you want to delete {{item.name}}?</p>
 		<form action="#" method = "post">
 			<input type="submit" value="Delete">
 		</form>
-		<a href="#">Cancel</a>
+		<a href="{{url_for('showItem', category = item.category.name, item = item.name)}}">Cancel</a>
 	</body>
 </html>

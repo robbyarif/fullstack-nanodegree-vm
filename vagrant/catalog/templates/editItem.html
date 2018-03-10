@@ -5,23 +5,40 @@
 	</head>
 	<body>
 		<div>
-			<h1 style="display:inline-block">Catalog App</h1>
+			<h1 style="display:inline-block"><a href="{{url_for('showCatalog')}}">Catalog App</a></h1>
 			<a href="#">Logout</a> 
 		</div>
+		<h2>Edit Item</h2>
+
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+		
+		<ul>
+		{% for message in messages %}
+			<li><strong>{{message}}</strong></li>
+		{% endfor %}
+		</ul>
+		{% endif %}
+		{% endwith %}
+
 		<form action="#" method = "post">
 			<p for="name">Name:</p>
 			<input type ="text" name="name" value="{{item.name}}">
 			<p>Description:</p>
 			<input type ="text" name="description" value="{{item.description}}">
 			<p>Category:</p>
-			<select name="category_name">
+			<select name="category_id">
 				{% for c in categories %}
+				{% if c.id == item.category_id %}
+				<option value="{{c.id}}" selected>{{c.name}}</option>
+				{% else %}
 				<option value="{{c.id}}">{{c.name}}</option>
+				{% endif %}
 				{% endfor %}
 			</select>
 			<br>
-			<input type="submit" value="Create">
+			<input type="submit" value="Update">
 		</form>
-		<a href="#">Cancel</a>
+		<a href="{{url_for('showItem', category = item.category.name, item = item.name)}}">Cancel</a>
 	</body>
 </html>

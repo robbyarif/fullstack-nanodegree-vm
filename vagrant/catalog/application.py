@@ -69,15 +69,22 @@ def showCatalogItems(category):
 # Create a new item
 @app.route('/catalog/items/new/', methods=['GET', 'POST'])
 def newItem():
-    categories = session.query(Category)
     if request.method == 'POST':
-        newItem = Item(name = request.form['name'], description = request.form['description'],
-                       category = request.form['category_id'], created_datetime = datetime.now())
-        session.add(newItem)
-        session.commit()
-        #flash message
-        return redirect(url_for('showCatalog'))
+        # TODO: change identifier to id not name
+        item = session.query(Item).filter_by(name = request.form['name']).all()
+        print item
+        if len(item) != 0:
+            flash("Error: Same item already created")
+            return redirect(url_for('newItem'))
+        else:
+            new_item = Item(name = request.form['name'], description = request.form['description'],
+                        category_id = request.form['category_id'], created_datetime = datetime.now())
+            session.add(new_item)
+            session.commit()
+            flash("New catalog item created!")
+            return redirect(url_for('showCatalog'))
     else:
+        categories = session.query(Category)
         return render_template('newItem.html', categories = categories)
 
 # Show an item
@@ -95,15 +102,34 @@ def showItem(category, item):
 # Edit an item
 @app.route('/catalog/<item>/edit/', methods=['GET', 'POST'])
 def editItem(item):
-    item = session.query(Item).filter_by(name = item).one()
-    return render_template('editItem.html', item = item)
+    if request.method == 'POST':
+        edited_item = session.query(Item).filter_by(name = item).one()
+        edited_item.name = request.form['name']
+        edited_item.description = request.form['description']
+        edited_item.category_id = request.form['category_id']
+        session.add(edited_item)
+        session.commit()
+        flash("Item {item_name} updated!".format(item_name = edited_item.name))
+        return redirect(url_for('showItem', category = edited_item.category.name, item = edited_item.name))
+    else:
+        categories = session.query(Category)
+        item = session.query(Item).filter_by(name = item).one()
+        return render_template('editItem.html', item = item, categories = categories)
 
 # Delete an item
 @app.route('/catalog/<item>/delete/', methods=['GET', 'POST'])
 def deleteItem(item):
-    item = session.query(Item).filter_by(name = item).one()
-    return render_template('deleteItem.html', item = item)
+    item_to_delete = session.query(Item).filter_by(name = item).one()
+    if request.method == 'POST':
+        parent_category = item_to_delete.category.name
+        session.delete(item_to_delete)
+        session.commit()
+        flash("{item_name} deleted!".format(item_name = item_to_delete.name))
+        return redirect(url_for('showCatalogItems', category = parent_category))
+    else :
+        return render_template('deleteItem.html', item = item_to_delete)
 
 if __name__ == '__main__':
+    app.secret_key = "asdfasdf"
     app.debug = True
     app.run(host='0.0.0.0', port=8000)

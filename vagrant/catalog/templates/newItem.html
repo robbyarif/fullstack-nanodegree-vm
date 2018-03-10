@@ -9,6 +9,18 @@
 			<a href="#">Logout</a> 
 		</div>
 		<h2>Add Item</h2>
+
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+		
+		<ul>
+		{% for message in messages %}
+			<li><strong>{{message}}</strong></li>
+		{% endfor %}
+		</ul>
+		{% endif %}
+		{% endwith %}
+
 		<form action="#" method = "post">
 			<p for="name">Name:</p>
 			<input type ="text" name="name">
@@ -23,6 +35,6 @@
 			<br>
 			<input type="submit" value="Create">
 		</form>
-		<a href="#">Cancel</a>
+		<a href="{{url_for('showCatalog')}}">Cancel</a>
 	</body>
 </html>
