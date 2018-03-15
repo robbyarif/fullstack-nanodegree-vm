@@ -198,8 +198,9 @@ def showCatalogItems(category):
 # Create a new item
 @app.route('/catalog/items/new/', methods=['GET', 'POST'])
 def newItem():
+    if 'username' not in login_session:
+        return redirect('/login')
     if request.method == 'POST':
-        # TODO: change identifier to id not name
         item = session.query(Item).filter_by(name = request.form['name']).all()
         print item
         if len(item) != 0:
@@ -231,8 +232,10 @@ def showItem(category, item):
 # Edit an item
 @app.route('/catalog/<item>/edit/', methods=['GET', 'POST'])
 def editItem(item):
+    if 'username' not in login_session:
+        return redirect('/login')
+    edited_item = session.query(Item).filter_by(name = item).one()
     if request.method == 'POST':
-        edited_item = session.query(Item).filter_by(name = item).one()
         edited_item.name = request.form['name']
         edited_item.description = request.form['description']
         edited_item.category_id = request.form['category_id']
@@ -242,12 +245,13 @@ def editItem(item):
         return redirect(url_for('showItem', category = edited_item.category.name, item = edited_item.name))
     else:
         categories = session.query(Category)
-        item = session.query(Item).filter_by(name = item).one()
-        return render_template('editItem.html', item = item, categories = categories)
+        return render_template('editItem.html', item = edited_item, categories = categories)
 
 # Delete an item
 @app.route('/catalog/<item>/delete/', methods=['GET', 'POST'])
 def deleteItem(item):
+    if 'username' not in login_session:
+        return redirect('/login')
     item_to_delete = session.query(Item).filter_by(name = item).one()
     if request.method == 'POST':
         parent_category = item_to_delete.category.name
