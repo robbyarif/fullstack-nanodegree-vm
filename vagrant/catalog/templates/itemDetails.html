@@ -21,6 +21,13 @@
 			</ul>
 			{% endif %}
 			{% endwith %}
+
+			<figure class="creator">
+				<img src="{{ creator.picture}}" width="40px">
+				<figcaption>{{ creator.name }}</figcaption>
+			</figure>
+			</h1>
+
 			<p>{{item.description}}</p>
 			<a href="{{url_for('editItem', item = item.name)}}">Edit</a> | <a href="{{url_for('deleteItem', item = item.name)}}">Delete</a>
 		</div>
