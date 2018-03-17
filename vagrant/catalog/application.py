@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Category, Item
+from database_setup import Base, Category, Item, User
 from datetime import datetime
 from flask import session as login_session
 import random
@@ -36,9 +36,10 @@ def showLogin():
                     for x in xrange(32))
     login_session['state'] = state
     # return "%s" % login_session['state']
+    print login_session['state']
     return render_template('login.html', STATE = state)
 
-@app.route('/gconnect/')
+@app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
     if request.args.get('state') != login_session['state']:
@@ -111,6 +112,12 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    # see if user exists, if it doesn't make a new one
+    user_id = getUserID(data["email"])
+    if not user_id:
+        user_id = createUser(login_session)
+    login_session['user_id'] = user_id
+
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -122,6 +129,24 @@ def gconnect():
     print "done!"
     return output
 
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session[
+                   'email'], picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
 
 @app.route('/gdisconnect/')
 def gdisconnect():
@@ -177,23 +202,21 @@ def gdisconnect():
 def showCatalog():
     categories = session.query(Category)
     items = session.query(Item).order_by(Item.created_datetime.desc()).all()
-    #if authorized
-    return render_template('catalog.html', categories = categories, items = items)
-    #else not authorized
-    # return render_template('publicCatalog.html', categories = categories, items = items)
+    if 'username' not in login_session:
+        return render_template('publicCatalog.html', categories = categories, items = items)
+    else:
+        return render_template('catalog.html', categories = categories, items = items)
 
 # Show catalog items
 @app.route('/catalog/<category>/items/')
 def showCatalogItems(category):
     categories = session.query(Category)
     category = session.query(Category).filter_by(name = category).one()
-    #if category not found return 404
     categoryItems = session.query(Item).filter_by(category_id = category.id).all()
-    #if empty show flash message no items yet. do you want to add some?
-    #if authorized
-    return render_template('catalogItems.html', categories = categories, category = category, items= categoryItems)
-    #else not authorized
-    # return render_template('publicCatalogItems.html', categories = categories, category= category, items= categoryItems)
+    if 'username' not in login_session:
+        return render_template('publicCatalogItems.html', categories = categories, category= category, items= categoryItems)
+    else:
+        return render_template('catalogItems.html', categories = categories, category = category, items= categoryItems)
 
 # Create a new item
 @app.route('/catalog/items/new/', methods=['GET', 'POST'])
@@ -208,7 +231,8 @@ def newItem():
             return redirect(url_for('newItem'))
         else:
             new_item = Item(name = request.form['name'], description = request.form['description'],
-                        category_id = request.form['category_id'], created_datetime = datetime.now())
+                        category_id = request.form['category_id'], created_datetime = datetime.now(),
+                        user_id = login_session['user_id'])
             session.add(new_item)
             session.commit()
             flash("New catalog item created!")
@@ -223,11 +247,11 @@ def showItem(category, item):
     item = session.query(Item).join(Category)\
     .filter(Category.name == category)\
     .filter(Item.name == item).one()
-    #if not found return 404
-    #if authorized
-    return render_template('itemDetails.html', item = item)
-    #else not authorized
-    # return render_template('publicItemDetails.html', item = item)
+    creator = getUserInfo(item.user_id)
+    if 'username' not in login_session or creator.id != login_session['user_id']:
+        return render_template('publicItemDetails.html', item = item)
+    else:
+        return render_template('itemDetails.html', item = item, creator=creator)
 
 # Edit an item
 @app.route('/catalog/<item>/edit/', methods=['GET', 'POST'])
@@ -235,6 +259,8 @@ def editItem(item):
     if 'username' not in login_session:
         return redirect('/login')
     edited_item = session.query(Item).filter_by(name = item).one()
+    if login_session['user_id'] != edited_item.user_id:
+        return "<script>function myFunction() {alert('You are not authorized to edit this item. Please create your own item in order to edit them.');}</script><body onload='myFunction()'>"
     if request.method == 'POST':
         edited_item.name = request.form['name']
         edited_item.description = request.form['description']
@@ -253,6 +279,8 @@ def deleteItem(item):
     if 'username' not in login_session:
         return redirect('/login')
     item_to_delete = session.query(Item).filter_by(name = item).one()
+    if login_session['user_id'] != item_to_delete.user_id:
+        return "<script>function myFunction() {alert('You are not authorized to delete this item. Please create your own item in order to delete them.');}</script><body onload='myFunction()'>"
     if request.method == 'POST':
         parent_category = item_to_delete.category.name
         session.delete(item_to_delete)
