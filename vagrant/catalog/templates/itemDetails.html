@@ -1,35 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<title>Catalog App</title>
-	</head>
-	<body>
-		<div>
-			<h1 style="display:inline-block"><a href="{{url_for('showCatalog')}}">Catalog App</a></h1>
-			<a href="#">Logout</a> 
-		</div>
-		<div>
-			<h2>{{item.name}}</h2>
-			{% with messages = get_flashed_messages() %}
-			{% if messages %}
-			
-			<ul>
-			{% for message in messages %}
-				<li><strong>{{message}}</strong></li>
-			{% endfor %}
-			</ul>
-			{% endif %}
-			{% endwith %}
+{% extends "main.html" %}
+{% block content %}
+<div>
+	<h2>{{item.name}}</h2>
+	{% with messages = get_flashed_messages() %}
+	{% if messages %}
+	
+	<ul>
+	{% for message in messages %}
+		<li><strong>{{message}}</strong></li>
+	{% endfor %}
+	</ul>
+	{% endif %}
+	{% endwith %}
 
-			<figure class="creator">
-				<img src="{{ creator.picture}}" width="40px">
-				<figcaption>{{ creator.name }}</figcaption>
-			</figure>
-			</h1>
+	<figure class="creator">
+		<img src="{{ creator.picture}}" width="40px">
+		<figcaption>{{ creator.name }}</figcaption>
+	</figure>
+	</h1>
 
-			<p>{{item.description}}</p>
-			<a href="{{url_for('editItem', item = item.name)}}">Edit</a> | <a href="{{url_for('deleteItem', item = item.name)}}">Delete</a>
-		</div>
-	</body>
-</html>
+	<p>{{item.description}}</p>
+	<a href="{{url_for('editItem', item = item.name)}}">Edit</a> | <a href="{{url_for('deleteItem', item = item.name)}}">Delete</a>
+</div>
+{% endblock %}
