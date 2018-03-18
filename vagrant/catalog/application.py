@@ -179,22 +179,23 @@ def gdisconnect():
         return response
 
 # # JSON APIs
-# @app.route('/catalog/JSON/')
-# @app.route('/catalog/json/')
-# def catalogJSON():
-#     return "This page will show all catalog and its items in JSON format"
+@app.route('/catalog/JSON/')
+def catalogJSON():
+    categories = session.query(Category).all()
+    return jsonify(categories=[c.serialize for c in categories])
 
-# @app.route('/catalog/<int:category_id>/items/<item_id>/JSON/')
-# @app.route('/catalog/<int:category_id>/items/<item_id>/json/')
-# def itemJSON(category_id, item_id):
-#     return "This page will show an item {0} from catalog {1} in JSON format".format(item_id, category_id)
+@app.route('/catalog/<category_name>/<item_name>/JSON/')
+def itemJSON(category_name, item_name):
+    category = session.query(Category).filter_by(name=category_name).one()
+    item = session.query(Item).filter_by(name = item_name, category_id = category.id).one()
+    return jsonify(item=item.serialize)
 
-# @app.route('/catalog/<int:category_id>/JSON/')
-# @app.route('/catalog/<int:category_id>/json/')
-# @app.route('/catalog/<int:category_id>/items/JSON/')
-# @app.route('/catalog/<int:category_id>/items/json/')
-# def catalogItemJSON(category_id):
-#     return "This page will show items from catalog %s in JSON format" % category_id
+@app.route('/catalog/<category_name>/JSON/')
+@app.route('/catalog/<category_name>/items/JSON/')
+def catalogItemJSON(category_name):
+    category = session.query(Category).filter_by(name=category_name).one()
+    items = session.query(Item).filter_by(category_id = category.id).all()
+    return jsonify(items=[i.serialize for i in items])
 
 # Show all catalog
 @app.route('/')
