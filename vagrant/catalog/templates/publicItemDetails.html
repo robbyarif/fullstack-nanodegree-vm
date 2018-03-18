@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<title>Catalog App</title>
-	</head>
-	<body>
-		<div>
-			<h1 style="display:inline-block"><a href="{{url_for('showCatalog')}}">Catalog App</a></h1>
-			<a href="{{url_for('showLogin')}}">Login</a> 
-		</div>
-		<div>
-			<h2>{{item.name}}</h2>
-			<p>{{item.description}}</p>
-		</div>
-	</body>
-</html>
+{% extends "main.html" %}
+{% block content %}
+<div>
+	<h2>{{item.name}}</h2>
+	<p>{{item.description}}</p>
+</div>
+{% endblock %}

@@ -1,44 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<title>Catalog App</title>
-	</head>
-	<body>
-		<div>
-			<h1 style="display:inline-block"><a href="{{url_for('showCatalog')}}">Catalog App</a></h1>
-			<a href="#">Logout</a> 
-		</div>
-		<div>
-			<div style="display:inline-block;">
-				
-				{% with messages = get_flashed_messages() %}
-				{% if messages %}
-				
-				<ul>
-				{% for message in messages %}
-					<li><strong>{{message}}</strong></li>
-					{% endfor %}
-				</ul>
-				{% endif %}
-				{% endwith %}
+{% extends "main.html"%}
+{% block content %}
+<div>
+	<div style="display:inline-block;">
+		
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+		
+		<ul>
+		{% for message in messages %}
+			<li><strong>{{message}}</strong></li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+		{% endwith %}
 
-				<h2>Categories</h2>
-				{% for c in categories %}
-				<p>
-					<a href="{{url_for('showCatalogItems', category=c.name)}}"><p>{{c.name}}</p></a>
-				</p>
-				{% endfor %}
-			</div>
-			<div style="display:inline-block;">
-				<a href="{{url_for('newItem')}}">Add Item</a>
-				<h2>Latest Items</h2>
-				{% for i in items %}
-				<p>
-					<a href="{{url_for('showItem', category = i.category.name, item = i.name)}}"><span>{{i.name}}</span><span> ({{i.category.name}})</span></a>
-				</p>
-				{% endfor %}
-			</div>
-		</div>
-	</body>
-</html>
+		<h2>Categories</h2>
+		{% for c in categories %}
+		<p>
+			<a href="{{url_for('showCatalogItems', category=c.name)}}"><p>{{c.name}}</p></a>
+		</p>
+		{% endfor %}
+	</div>
+	<div style="display:inline-block;">
+		<a href="{{url_for('newItem')}}">Add Item</a>
+		<h2>Latest Items</h2>
+		{% for i in items %}
+		<p>
+			<a href="{{url_for('showItem', category = i.category.name, item = i.name)}}"><span>{{i.name}}</span><span> ({{i.category.name}})</span></a>
+		</p>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+		
