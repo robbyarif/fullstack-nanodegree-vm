@@ -1,0 +1,16 @@
+
+a {
+  font-size: 18px;
+  color: #4A4A4A;
+  line-height: 23px;
+}
+
+.category-list{
+  background-color: #F0F0F0;
+  padding: 20px;
+}
+
+.item-list{
+  background-color: #F0F0F0;
+  padding: 20px;
+}

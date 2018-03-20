@@ -1,7 +1,7 @@
 {% extends "main.html" %}
 {% block content %}
 <div>
-	<div style="display:inline-block;">
+	<div class="flash">
 		{% with messages = get_flashed_messages() %}
 		{% if messages %}
 		
@@ -12,7 +12,8 @@
 		</ul>
 		{% endif %}
 		{% endwith %}
-
+	</div>
+	<div class="col-md-4">
 		<h2>Categories</h2>
 		{% for c in categories %}
 		<p>
@@ -20,12 +21,12 @@
 		</p>
 		{% endfor %}
 	</div>
-	<div style="display:inline-block;">
+	<div class="col-md-8">
 		<a href="{{url_for('newItem')}}">Add Item</a>
 		<h2>{{category.name}} Items ({{items|length}} items)</h2>
 		{% for i in items %}
 		<p>
-		<a href="{{url_for('showItem', category = i.category.name, item = i.name)}}"><span>{{i.name}}</span></a>
+			<a href="{{url_for('showItem', category = i.category.name, item = i.name)}}"><span>{{i.name}}</span></a>
 		</p>
 		{% endfor %}
 	</div>

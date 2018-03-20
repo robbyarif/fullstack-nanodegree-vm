@@ -1,7 +1,7 @@
 {% extends "main.html" %}
 {% block content %}
 <div>
-	<div style="display:inline-block;">
+	<div class="col-md-4">
 		<h2>Categories</h2>
 		{% for c in categories %}
 		<div>
@@ -9,7 +9,7 @@
 		</div>
 		{% endfor %}
 	</div>
-	<div style="display:inline-block">
+	<div class="col-md-8">
 		<h2>{{category.name}} Items ({{items|length}} items)</h2>
 		{% for i in items %}
 		<p>
