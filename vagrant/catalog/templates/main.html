@@ -13,19 +13,19 @@
   <body>
     {% block header %}
     <header>
-      <nav class="navbar navbar-default">
+      <nav class="navbar navbar-default navbar-main">
         <div class="container">
           <div class="navbar-header">
-            <a class="navbar-brand" href="{{url_for('showCatalog')}}">Catalog App</a>
+            <a class="navbar-brand navbar-catalog-brand" href="{{url_for('showCatalog')}}"><span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;Item Catalog App</a>
           </div>
-          <ul class="nav navbar-nav navbar-right">
+          <ul class="nav navbar-nav navbar-catalog-right">
             {% if 'username' not in session %}
             <li>
-              <a href="{{url_for('showLogin')}}">Login</a>
+              <a class="navbar-catalog-login" href="{{url_for('showLogin')}}">Login</a>
             </li> 
             {% else %}
             <li>
-                <a href="{{url_for('gdisconnect')}}">Logout</a> 
+                <a class="navbar-catalog-login" href="{{url_for('gdisconnect')}}">Logout</a> 
             </li>
             {% endif %}
           </ul>
