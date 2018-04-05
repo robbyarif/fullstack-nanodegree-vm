@@ -250,7 +250,7 @@ def showItem(category, item):
     .filter(Item.name == item).one()
     creator = getUserInfo(item.user_id)
     if 'username' not in login_session or creator.id != login_session['user_id']:
-        return render_template('publicItemDetails.html', item = item)
+        return render_template('publicItemDetails.html', item = item, creator=creator)
     else:
         return render_template('itemDetails.html', item = item, creator=creator)
 

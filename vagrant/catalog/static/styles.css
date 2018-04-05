@@ -49,3 +49,17 @@ a {
 .btn-add {
   float: right;
 }
+
+.item-title {
+  background-color: #F1F1F1;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.item-title > span {
+  font-size: 30px;
+}
+
+.item-title > figure > img {
+  border-radius: 30px;
+}
