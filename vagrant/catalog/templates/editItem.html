@@ -14,22 +14,28 @@
 {% endwith %}
 
 <form action="#" method = "post">
-	<p for="name">Name:</p>
-	<input type ="text" name="name" value="{{item.name}}">
-	<p>Description:</p>
-	<input type ="text" name="description" value="{{item.description}}">
-	<p>Category:</p>
-	<select name="category_id">
-		{% for c in categories %}
-		{% if c.id == item.category_id %}
-		<option value="{{c.id}}" selected>{{c.name}}</option>
-		{% else %}
-		<option value="{{c.id}}">{{c.name}}</option>
-		{% endif %}
-		{% endfor %}
-	</select>
-	<br>
-	<input type="submit" value="Update">
+	<div class="form-group">
+		<label for="name">Name</label>
+		<input type ="text" name="name" value="{{item.name}}" class="form-control">
+	</div>
+	<div class="form-group">
+		<label>Description</label>
+		<input type ="text" name="description" value="{{item.description}}" class="form-control">
+	</div>
+	<div class="form-group">
+		<label>Category</label>
+		<select name="category_id" class="form-control">
+			{% for c in categories %}
+			{% if c.id == item.category_id %}
+			<option value="{{c.id}}" selected>{{c.name}}</option>
+			{% else %}
+			<option value="{{c.id}}">{{c.name}}</option>
+			{% endif %}
+			{% endfor %}
+		</select>
+	</div>
+	<input type="submit" value="Update" class="btn btn-default"> 
+	<!-- <br> -->
+	<span> or </span><a href="{{url_for('showItem', category = item.category.name, item = item.name)}}"><small>Cancel</small></a>
 </form>
-<a href="{{url_for('showItem', category = item.category.name, item = item.name)}}">Cancel</a>
 {% endblock %}

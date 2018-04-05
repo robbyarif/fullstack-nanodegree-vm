@@ -16,7 +16,8 @@
 
 <p>Are you sure you want to delete {{item.name}}?</p>
 <form action="#" method = "post">
-	<input type="submit" value="Delete">
+	<input type="submit" value="Delete" class="btn btn-default">
+	<span>or <a href="{{url_for('showItem', category = item.category.name, item = item.name)}}"><small>Cancel</small></a></span>
 </form>
-<a href="{{url_for('showItem', category = item.category.name, item = item.name)}}">Cancel</a>
+
 {% endblock %}

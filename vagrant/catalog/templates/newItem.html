@@ -14,18 +14,23 @@
 {% endwith %}
 
 <form action="#" method = "post">
-	<p for="name">Name:</p>
-	<input type ="text" name="name">
-	<p>Description:</p>
-	<input type ="text" name="description">
-	<p>Category:</p>
-	<select name="category_id">
-		{% for c in categories %}
-		<option value="{{c.id}}">{{c.name}}</option>
-		{% endfor %}
-	</select>
-	<br>
-	<input type="submit" value="Create">
+	<div class="form-group">
+		<label for="name">Name</label>
+		<input type ="text" name="name" class="form-control">
+	</div>
+	<div class="form-group">
+		<label>Description</label>
+		<input type ="text" name="description" class="form-control">
+	</div>
+	<div class="form-group">
+		<label>Category:</label>
+		<select name="category_id" class="form-control">
+			{% for c in categories %}
+			<option value="{{c.id}}">{{c.name}}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<input type="submit" value="Create" class="btn btn-default">
+	<span> or </span><a href="{{url_for('showCatalog')}}"><small>Cancel</small></a>
 </form>
-<a href="{{url_for('showCatalog')}}">Cancel</a>
 {% endblock %}
