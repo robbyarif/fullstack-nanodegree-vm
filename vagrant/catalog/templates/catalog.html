@@ -17,12 +17,11 @@
 	<div class="col-xs-4 col-md-4">
 		<h2>Categories</h2>
 		{% for c in categories %}
-			<a href="{{url_for('showCatalogItems', category=c.name)}}"><p class="category-list">{{c.name}}</p></a>
+		<a href="{{url_for('showCatalogItems', category=c.name)}}"><p class="category-list">{{c.name}}</p></a>
 		{% endfor %}
 	</div>
 	<div class="col-xs-8 col-md-8">
-		<a href="{{url_for('newItem')}}" class="btn btn-primary">Add Item</a>
-		<h2>Latest Items</h2>
+		<h2>Latest Items <a href="{{url_for('newItem')}}" class="btn btn-primary btn-add">Add Item</a></h2>
 		{% for i in items %}
 		<p class="item-list">
 			<a  href="{{url_for('showItem', category = i.category.name, item = i.name)}}"><span>{{i.name}}</span><span> ({{i.category.name}})</span></a>
