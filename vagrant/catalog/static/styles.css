@@ -45,3 +45,7 @@ a {
   background-color: #F0F0F0;
   padding: 20px;
 }
+
+.btn-add {
+  float: right;
+}
